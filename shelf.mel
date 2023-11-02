@@ -1,0 +1,42 @@
+string $shelfName;
+if (!`exists shelfName`) $shelfName = "PolyHaven";
+
+string $basePath;
+if (!`exists basePath`) $basePath = "E:/HdriHaven/Maya/Code";
+
+string $iconName;
+if (!`exists iconName`) $iconName = "polyhaven.png";
+
+string $fullIconPath;
+if (!`exists fullIconPath`) $fullIconPath = $basePath + "/" + $iconName;
+
+string $command;
+if (!`exists command`) $command = ("import sys; "
+                   "sys.path.append('" + $basePath + "'); "
+                   "import shelf; "
+                   "reload(shelf); "
+                   "shelf.show_window()");
+
+
+global string $gShelfTopLevel;
+
+string $shelfLayout;
+if (!`exists shelfLayout`) $shelfLayout = `shelfLayout -p $gShelfTopLevel $shelfName`;
+
+string $shelfButton;
+if (!`exists shelfButton`) 
+    $shelfButton = `shelfButton
+    -enableCommandRepeat 1
+    -enable 1
+    -width 34
+    -height 34
+    -label "Run Python Script"
+    -image $fullIconPath
+    -imageOverlayLabel " "
+    -font "plainLabelFont"
+    -overlayLabelColor 0.8 0.8 0.8 
+    -overlayLabelBackColor 0 0 0 0 
+    -annotation "Run Python Script"
+    -sourceType "python"
+    -command $command
+    -parent $shelfLayout`;

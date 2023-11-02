@@ -1,0 +1,92 @@
+{
+  "categories": [
+    "HDRIs",
+    "Textures",
+    "Models"
+    ],
+    "subcategories" : {
+      "HDRIs" : {
+        "indoor" : {
+          "natural light" : [
+            "medium contrast",
+            "low contrast",
+            "high contrast"
+          ],
+          "artificial light" : [
+            "medium contrast",
+            "low contrast",
+            "high contrast"
+          ],
+          "studio" : [
+            "medium contrast",
+            "low contrast",
+            "high contrast"
+          ]
+        },
+        "outdoor" : {
+          "natural" : [
+            "midday",
+            "morning-afternoon",
+            "night",
+            "sunrise-sunset"
+          ],
+          "urban" : [
+            "midday",
+            "morning-afternoon",
+            "night",
+            "sunrise-sunset"
+          ],
+          "skies" : [
+            "midday",
+            "morning-afternoon",
+            "night",
+            "sunrise-sunset"
+          ]
+        } 
+      },
+      "Textures" : {
+        "root" : [
+          "rock",
+          "roofing",
+          "wood",
+          "brick",
+          "fabric",
+          "metal",
+          "plaster-concrete"
+        ],
+        "terrain" : [
+          "aerial",
+          "rock",
+          "sand",
+          "snow"
+        ]
+      },
+      "Models" : {
+        "root" : [
+          "industrial",
+          "lighting"
+        ],
+        "props" : [
+          "appliances",
+          "electronics",
+          "tools"
+        ],
+        "nature" : {
+          "root" : [
+            "food",
+            "plants",
+            "potted plants",
+            "rocks"
+          ],
+          "ground cover" : [
+              "grass"
+          ]
+        },
+        "furniture" :[
+          "seating",
+          "shelves",
+          "table"
+        ]
+      }
+    }
+}
