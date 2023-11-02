@@ -1,7 +1,7 @@
 import maya.cmds as cmds
 import sys
 import os
-basePath = 'C:/HdriHaven'
+basePath = 'C:/PolyHaven'
 sys.path.append(basePath)
 
 # Create a new shelf

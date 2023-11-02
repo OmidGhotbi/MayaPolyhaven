@@ -7,7 +7,7 @@ from PySide2 import QtWidgets, QtCore, QtGui
 import maya.OpenMayaUI as omui
 from shiboken2 import wrapInstance
 
-basePath = 'C:/HdriHaven'
+basePath = 'C:/PolyHaven'
 sys.path.append(basePath)
 from get_path import getPath
 path = getPath().get_inventory_path()

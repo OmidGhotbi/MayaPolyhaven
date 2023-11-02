@@ -2,7 +2,7 @@ import json
 import os
 import sys
 
-basePath = 'C:/HdriHaven'
+basePath = 'C:/PolyHaven'
 
 # Get/Set path to inventory and the current Python script
 class getPath():

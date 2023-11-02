@@ -6,7 +6,7 @@ SET CURRENT_DIR=%~dp0
 SET CURRENT_DIR=%CURRENT_DIR:~0,-1%
 
 :: Define the string to be replaced and the current directory path
-set "search=C:/HdriHaven"
+set "search=C:/PolyHaven"
 set "replace=%CURRENT_DIR:\=/%"
 
 set "files=main.py get_path.py shelf.py"
@@ -27,7 +27,7 @@ for %%f in (%files%) do (
 )
 
 :: Define the string to be replaced and the current inventory path
-set "search=C:/HdriHaven/inventory"
+set "search=C:/PolyHaven/inventory"
 set "replace=%CURRENT_DIR:\=/%/inventory"
 
 set "file=settings.json"
