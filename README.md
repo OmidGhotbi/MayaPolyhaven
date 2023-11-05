@@ -10,7 +10,9 @@ A Blender add-on to integrate our assets natively in the Autodesk Maya.
 2. Select between Phong and aiArnoldSurfce material
 3. Lets you swap the resolution of an asset to higher/lower resolutions any time after import (most are at least 8K).
 4. Set the texture mapping scale to the correct real-world size according to the surfaces you've applied it to.
-5. Automatic setup of texture displacement with adaptive subdivision.
+6. Automatic setup of HDRi Light
+7. Automatic setup of texture displacement with adaptive subdivision.
+8. Automatic import of models and set Materials and texture nodes.
 
 ## Installation
 
