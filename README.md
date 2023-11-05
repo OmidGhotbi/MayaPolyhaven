@@ -19,8 +19,8 @@ A Blender add-on to integrate our assets natively in the Autodesk Maya.
 1. Download the ZIP file [download it here for free](https://github.com/OmidGhotbi/polyhavenassets/releases/download/release/PolyHaven-v0.0.17-beta.1.zip).
 2. Choose one of the following steps as you prefer. (you do not need to do all of them just one of them would be enough)
 
-    * a. Unzip the Download release in C:\ for Windows user or ~/ for Mac or Linux user
-    * b. Unzip the Download anywhere you want and run Setup.bat in Windows or Setup.sh in Mac or Linux
+    * a. Unzip the Download release in C:\ for Windows user or ~/ for Mac or Linux user. Final path will be like this **C:\PolyHave**
+    * b. Unzip the Download anywhere you want and run Setup.bat in Windows or Setup.sh in Mac or Linux. **Prefered Method**
     * c. Alternatively, you can unzip the download file anywhere you want and add its path in Maya Additional script paths
 
 3. import shelf.py now you have it in Maya shelf as Polyhaven
