@@ -46,3 +46,4 @@ You can change the **Inventory Path** as you wish by go to **Settings** and choo
 ## Known Issues
 
 1. Some Objects may not be imported correctly because of the incorrect FBX on the PolyHaven website.
+2. Download All is disabled by default as downloading all of the models, materials, and HDRIs can take up huge space.
