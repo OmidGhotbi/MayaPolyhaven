@@ -14,7 +14,7 @@ class SyncThread(QThread):
 
     def run(self):
         # URL of the API
-        url = "https://api.polyhaven.com/assets?t=all&future=true"
+        url = "https://api.polyhaven.com/assets?t=all"
         
         # Send a GET request to the API
         response = self.session.get(url)
