@@ -32,11 +32,11 @@ class getPath():
             os.makedirs(self.settings["inventoryPath"])
             
         # Update the settings in the JSON file
-        with open('settings.json', 'w') as f:
-            json.dump(self.settings, f)
+        #with open('settings.json', 'w') as f:
+        #    json.dump(self.settings, f)
         
         # Update the settings in the JSON file
-        with open(os.path.join(self.base_path(), 'settings.json'), 'w') as f:
+        with open(os.path.join(self.base_path(), 'settings.json'), 'r+') as f:
             json.dump(self.settings, f)
 
     # Return current Python script path
