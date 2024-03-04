@@ -23,7 +23,7 @@ A Blender add-on to integrate our assets natively in the Autodesk Maya.
     * b. Unzip the Download anywhere you want and run Setup.bat in Windows or Setup.sh in Mac or Linux. Setup will do all the necessary changes for you. **Prefered Method**
     * c. Alternatively, you can unzip the download file anywhere you want and add its path in Maya Additional script paths
 
-3. import shelf.py now you have it in Maya shelf as Polyhaven
+3. Drag and drop **shelf.py** into Maya viewport, now you have it in Maya shelf as Polyhaven
 
 For more detailed instructions, I will add a video tutorial very soon.
 
