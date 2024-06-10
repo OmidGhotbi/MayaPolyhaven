@@ -1,4 +1,4 @@
-# Poly Haven Assets Add-on for Maya
+# Poly Haven Assets Manager plugin for Autodesk Maya
 
 A Blender add-on to integrate our assets natively in the Autodesk Maya.
 
