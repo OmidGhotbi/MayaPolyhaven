@@ -42,6 +42,7 @@ For more detailed instructions, I will add a video tutorial very soon.
 6. Now the item is available, simply right-click on the item and add the assets to your scene.
 7. PolyHaven will release new assets almost daily, so you can click that *Sync* button any time to download new assets.
 
+<img width="317" height="216" alt="image" src="https://github.com/user-attachments/assets/ec067e22-b875-462b-96fc-6de1e09a0b0d" />
 
 ## Settings
 You can change the **Inventory Path** as you wish by go to **Settings** and choose **Set inventory Path** then select a new path
