@@ -44,13 +44,167 @@ class popbutton(QtWidgets.QPushButton):
             action1.triggered.connect(self.assign_texture)
             action3.triggered.connect(self.assign_texture_arnold)
         elif self.category.value == cat.Models.value:
-            action1 = menu.addAction("Add Models to the scene")
+            action1 = menu.addAction("Add Model to the scene")
+            action2 = menu.addAction("Add Model and Convert Shader to Arnold")
             action1.triggered.connect(self.import_model)
-        action2 = menu.addAction("Download")
+            action2.triggered.connect(self.import_model_and_convert_arnold)
+        action_download = menu.addAction("Download")
         
         action = menu.exec_(self.mapToGlobal(pos))
-        if action == action2:
+        if action == action_download:
             self.download_item()
+
+    # Import model and convert its shader to Arnold
+    def import_model_and_convert_arnold(self):
+        path = getPath().get_inventory_path()
+        fbx_path = os.path.join(path, self.name, self.name + '_' + self.quality + '.fbx')
+        if os.path.exists(fbx_path):
+            new_nodes = cmds.file(fbx_path, i=True, returnNewNodes=True)
+            scale_factor = 2.0
+            cmds.scale(scale_factor, scale_factor, scale_factor, new_nodes)
+            cmds.select(new_nodes)
+            self._auto_build_arnold_from_selection()
+        else:
+            print(f"File {fbx_path} does not exist.")
+
+    # Arnold shader conversion logic (from provided script)
+    def _auto_build_arnold_from_selection(self):
+        import re
+        MAP_KEYWORDS = {
+            "baseColor": ["basecolor","base_color","albedo","diffuse","color","col","diff"],
+            "roughness": ["rough","roughness","rgh","gloss","glossiness"],
+            "metallic":  ["metallic","metalness","metal","mtl"],
+            "normal":    ["normal","nrm","norm","normalgl","normal_opengl","normal_tangent","nor_gl"],
+            "height":    ["height","disp","displacement"],
+            "ao":        ["ao","occlusion","ambientocclusion"],
+            "specular":  ["spec","specular","spc"],
+            "opacity":   ["alpha","opacity","opac","transparency"],
+        }
+        EXTS = (".png",".jpg",".jpeg",".tif",".tiff",".exr",".tga",".bmp",".webp")
+
+        def _get_shapes_from_selection():
+            sels = cmds.ls(sl=True, long=True) or []
+            shapes = []
+            for s in sels:
+                shapes += (cmds.listRelatives(s, shapes=True, fullPath=True) or [])
+            for s in sels:
+                if cmds.nodeType(s) in ("mesh","nurbsSurface","subdiv"):
+                    shapes.append(s)
+            return list(dict.fromkeys(shapes))
+
+        def _get_materials(shape):
+            mats = []
+            sgs = cmds.listConnections(shape, type="shadingEngine") or []
+            for sg in sgs:
+                m = cmds.listConnections(sg + ".surfaceShader", s=True, d=False) or []
+                mats += m
+            return list(dict.fromkeys(mats))
+
+        def _find_basecolor_file(shader):
+            candidate_attrs = ["baseColor","color","diffuseColor","diffuse","base_color"]
+            for attr in candidate_attrs:
+                plug = "{}.{}".format(shader, attr)
+                if not cmds.objExists(plug):
+                    continue
+                conns = cmds.listConnections(plug, s=True, d=False) or []
+                for n in conns:
+                    try:
+                        if cmds.nodeType(n) == "file":
+                            return n, cmds.getAttr(n + ".fileTextureName")
+                        if cmds.nodeType(n) == "aiImage":
+                            return n, cmds.getAttr(n + ".filename")
+                    except:
+                        pass
+            return None, None
+
+        def _classify_maps_in_folder(folder):
+            result = {}
+            if not folder or not os.path.isdir(folder):
+                return result
+            for f in os.listdir(folder):
+                fl = f.lower()
+                if not fl.endswith(EXTS):
+                    continue
+                for mtype, keys in MAP_KEYWORDS.items():
+                    if any(k in fl for k in keys):
+                        result.setdefault(mtype, []).append(os.path.join(folder, f).replace("\\","/"))
+                        break
+            return result
+
+        def inspect_selected_materials():
+            out = []
+            for shp in _get_shapes_from_selection():
+                for mat in _get_materials(shp):
+                    node_type = cmds.nodeType(mat)
+                    base_node, base_path = _find_basecolor_file(mat)
+                    folder = os.path.dirname(base_path) if base_path else None
+                    found = _classify_maps_in_folder(folder) if folder else {}
+                    out.append({
+                        "mesh": shp,
+                        "material": mat,
+                        "materialType": node_type,
+                        "base_map_node": base_node,
+                        "base_map_path": base_path,
+                        "folder": folder,
+                        "found_maps": found
+                    })
+            return out
+
+        def _make_file_node(path, force_raw=False):
+            fnode = cmds.shadingNode("file", asTexture=True, isColorManaged=True)
+            p2d = cmds.shadingNode("place2dTexture", asUtility=True)
+            for attr in ["coverage","translateFrame","rotateFrame","mirrorU","mirrorV","stagger","wrapU","wrapV",
+                         "repeatUV","offset","rotateUV","noiseUV","vertexUvOne","vertexUvTwo","vertexUvThree","vertexCameraOne"]:
+                if cmds.objExists(p2d + "." + attr) and cmds.objExists(fnode + "." + attr):
+                    cmds.connectAttr(p2d + "." + attr, fnode + "." + attr, f=True)
+            if cmds.objExists(p2d + ".outUV") and cmds.objExists(fnode + ".uvCoord"):
+                cmds.connectAttr(p2d + ".outUV", fnode + ".uvCoord", f=True)
+            if cmds.objExists(p2d + ".outUvFilterSize") and cmds.objExists(fnode + ".uvFilterSize"):
+                cmds.connectAttr(p2d + ".outUvFilterSize", fnode + ".uvFilterSize", f=True)
+            cmds.setAttr(fnode + ".fileTextureName", path, type="string")
+            if force_raw:
+                cmds.setAttr(fnode + ".colorSpace", "Raw", type="string")
+            return fnode
+
+        def build_ai_shader_from_maps(maps, basecolor_path, assign_to_mesh=None):
+            shader_name = "AIShader_Auto"
+            if basecolor_path:
+                base_file = os.path.basename(basecolor_path)
+                shader_name = re.sub(r'(_diff.*|_basecolor.*|_albedo.*)', '', os.path.splitext(base_file)[0])
+            shader = cmds.shadingNode("aiStandardSurface", asShader=True, name=shader_name)
+            sg = cmds.sets(renderable=True, noSurfaceShader=True, empty=True, name=shader + "SG")
+            cmds.connectAttr(shader + ".outColor", sg + ".surfaceShader", f=True)
+            if "baseColor" in maps:
+                f = _make_file_node(maps["baseColor"][0])
+                cmds.connectAttr(f + ".outColor", shader + ".baseColor", f=True)
+            if "roughness" in maps:
+                f = _make_file_node(maps["roughness"][0], force_raw=True)
+                cmds.connectAttr(f + ".outAlpha", shader + ".specularRoughness", f=True)
+            if "metallic" in maps:
+                f = _make_file_node(maps["metallic"][0], force_raw=True)
+                cmds.connectAttr(f + ".outAlpha", shader + ".metalness", f=True)
+            if "opacity" in maps:
+                f = _make_file_node(maps["opacity"][0], force_raw=True)
+                cmds.connectAttr(f + ".outColor", shader + ".opacity", f=True)
+            if "normal" in maps:
+                f = _make_file_node(maps["normal"][0], force_raw=True)
+                bump = cmds.shadingNode("aiNormalMap", asShader=True, name=shader_name + "_NormalMap")
+                cmds.connectAttr(f + ".outColor", bump + ".input", f=True)
+                cmds.connectAttr(bump + ".outValue", shader + ".normalCamera", f=True)
+            if assign_to_mesh:
+                cmds.sets(assign_to_mesh, e=True, forceElement=sg)
+            return shader
+
+        infos = inspect_selected_materials()
+        if not infos:
+            cmds.warning(" No valid materials/maps found on selection.")
+            return
+        for d in infos:
+            if not d["found_maps"]:
+                cmds.warning("No maps detected in folder for: " + d["mesh"])
+                continue
+            print(" Building shader for", d["mesh"], "from folder:", d["folder"])
+            build_ai_shader_from_maps(d["found_maps"], d["base_map_path"], assign_to_mesh=d["mesh"])
     
     
     # Call download in background thread
