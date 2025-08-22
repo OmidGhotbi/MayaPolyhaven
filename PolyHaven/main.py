@@ -177,7 +177,7 @@ class Window(QtWidgets.QMainWindow):
 
     # Show About window
     def show_about_info(self):
-         QMessageBox.about(self, "About", "Version: v0.0.17 beta 1\nOmid Ghotbi\nomidt.gh@gmail.com")
+         QMessageBox.about(self, "About", "Version: v0.0.17 beta 2\nOmid Ghotbi\nomidt.gh@gmail.com")
 
     # Pepulate main brunch of tree view
     def add_to_tree(self, categories, nested_subcategories):
